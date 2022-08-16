@@ -1,8 +1,8 @@
 const LoginController = require('../controllers/login.controller')
 
-function addRotas(app, auth) {
+function addRotas(app) {
     app.post('/login', async (req, res) => {
-        let vaController = new LoginController(auth);
+        let vaController = new LoginController();
         let vaResult = await vaController.login(req.body);
         if (vaResult.auth) {
             res.status(200).send(vaResult)
@@ -12,4 +12,4 @@ function addRotas(app, auth) {
     });
 }
 
-exports.addRotasLogin = addRotas;
+exports.addRotas = addRotas;

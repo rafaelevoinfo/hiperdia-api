@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const {Log} = require('../log')
 
-async function authorize(req, res, authServer) {
+async function authorize(req, res) {
     const token = req.headers['x-access-token'];
     if (!token) {
         res.status(401).json({
@@ -14,7 +14,7 @@ async function authorize(req, res, authServer) {
         
     jwt.verify(token, process.env.SECRET, function (err, decoded) {
         if (err) {
-            res.status(500).json({
+            res.status(401).json({
                 auth: false,
                 message: err.message == "jwt expired" ? "expirado" : "token inválido"
             });

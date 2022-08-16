@@ -1,11 +1,9 @@
 const jwt = require("jsonwebtoken");
-const {Log, LogLevel} = require('../log')
+const { Log, LogLevel } = require('../log')
+const { firebase_admin } = require('../firebase')
 
 class LoginController {
-  constructor(ipAuth) {
-    this.auth = ipAuth;
-  }
-
+  
   async login(ipBody) {
     let vaResult = {
       auth: false,
@@ -15,18 +13,25 @@ class LoginController {
       if (process.env.DEBUG) {
         console.log(ipBody);
       }
-      let { email, senha } = ipBody;
+      let { login, senha } = ipBody;
 
-      if (email && senha) {        
-        let vaUserCredential = await this.auth.signInWithEmailAndPassword(this.auth.getAuth(), email, senha);          
+      if (login && senha) {
+        /*let agentesRef = this.firestore.collection(this.firestore.getFirestore(),"agentes")
+        let query = this.firestore.query(agentesRef, this.firestore.where("login", "==", "admin"));
+        let snapshot = await this.firestore.getDocs(query);*/
+        let snapshot = await firebase_admin.firestore().collection("agentes").where("login", "==", login).get();
+        snapshot.forEach((doc) => {
+          if (doc && doc.exists) {
+            let agente = doc.data();
+            if (agente.senha === senha) {
 
-        vaResult.auth = true;
-        vaUserCredential.user.email;
-          
-        vaResult.token = jwt.sign({
-            "email": vaUserCredential.user.email
-        }, process.env.SECRET, {
-            expiresIn: 86400 // expires in 1 day
+              vaResult.auth = true;
+              vaResult.token = jwt.sign({"login": login,
+                                         "perfil": agente.perfil},
+                                         process.env.SECRET, 
+                                        {expiresIn: 86400 });// expires in 1 day                                
+            }
+          }
         });
       }
     } catch (error) {

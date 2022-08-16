@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 require('express-async-errors');
-const {auth} = require('./firebase')
+const {firebase_admin} = require('./firebase')
 const cors = require('cors')
 const {handle_error} = require('./middlewares/handle_error.middleware')
 
@@ -17,8 +17,8 @@ const rotasAgente = require('./routers/agente.router')
 
 // console.log(auth);
 //app.use(require('./middlewares/auth.middleware'))
-rotasLogin.addRotasLogin(app, auth);
-rotasAgente.addRotas(app, auth);
+rotasLogin.addRotas(app);
+rotasAgente.addRotas(app);
 
 app.use(handle_error);
 
