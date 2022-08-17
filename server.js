@@ -19,7 +19,6 @@ const rotasAgente = require('./routers/agente.router')
 //app.use(require('./middlewares/auth.middleware'))
 rotasLogin.addRotas(app);
 rotasAgente.addRotas(app);
-
 app.use(handle_error);
 
 // Start the app by listening on the default Heroku port

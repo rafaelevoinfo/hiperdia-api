@@ -6,6 +6,7 @@ const COLLECTION_NAME = "agentes";
 class AgenteController {
 
     async salvarAgente(agente) {
+        Log.logInfo(`Salvando o agente ${JSON.stringify(agente)}`);
         if ((!agente) || (!agente.login) || (!agente.senha) || (!agente.nome)) {
             throw new ServerError("Dados inválidos", 400);
         }
@@ -18,7 +19,7 @@ class AgenteController {
         let snapshot = await agentesCollectionRef.where("login", "==", agente.login).get();
         if ((snapshot) && (snapshot.docs.length > 0)) {
             snapshot.forEach((doc) => {
-                if (doc.data().id != agente.id) {
+                if (doc.id != agente.id) {
                     throw new ServerError("Já existe um agente cadastrado para este login", 400);
                 }
             })
@@ -39,6 +40,16 @@ class AgenteController {
         }
 
 
+    }
+
+    async excluirAgente(id){
+        try {
+            let agentesRef = firebase_admin.firestore().collection(COLLECTION_NAME);
+            return !!await agentesRef.doc(id).delete();            
+        } catch (error) {
+            Log.logError(`Erro ao excluir o agente. Detalhes: ${error}`);
+            throw new ServerError("Não foi possível excluir o agente.", 500);
+        }
     }
 
     async buscarAgentes(req) {
