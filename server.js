@@ -2,9 +2,9 @@ require('dotenv').config();
 
 const express = require('express');
 require('express-async-errors');
-const {firebase_admin} = require('./firebase')
-const cors = require('cors')
-const {handle_error} = require('./middlewares/handle_error.middleware')
+const {firebase_admin} = require('./firebase');
+const cors = require('cors');
+const {handle_error} = require('./middlewares/handle_error.middleware');
 
 const app = express();
 
@@ -12,13 +12,15 @@ app.use(cors());
 app.use(express.json());
 
 
-const rotasLogin = require('./routers/login.router')
-const rotasAgente = require('./routers/agente.router')
+const rotasLogin = require('./routers/login.router');
+const rotasAgente = require('./routers/agente.router');
+const rotasPaciente = require('./routers/paciente.router');
 
 // console.log(auth);
 //app.use(require('./middlewares/auth.middleware'))
 rotasLogin.addRotas(app);
 rotasAgente.addRotas(app);
+rotasPaciente.addRotas(app);
 app.use(handle_error);
 
 // Start the app by listening on the default Heroku port
