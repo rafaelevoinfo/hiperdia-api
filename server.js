@@ -15,12 +15,14 @@ app.use(express.json());
 const rotasLogin = require('./routers/login.router');
 const rotasAgente = require('./routers/agente.router');
 const rotasPaciente = require('./routers/paciente.router');
+const rotasConsulta = require('./routers/consulta.router');
 
 // console.log(auth);
 //app.use(require('./middlewares/auth.middleware'))
 rotasLogin.addRotas(app);
 rotasAgente.addRotas(app);
 rotasPaciente.addRotas(app);
+rotasConsulta.addRotas(app);
 app.use(handle_error);
 
 // Start the app by listening on the default Heroku port

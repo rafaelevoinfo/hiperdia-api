@@ -3,7 +3,7 @@ const { firebase_admin } = require('../firebase')
 const { Log } = require('../log')
 const COLLECTION_NAME = "pacientes";
 
-class AgenteController {
+class PacienteController {
 
     async salvarPaciente(paciente) {
         Log.logInfo(`Salvando o paciente ${JSON.stringify(paciente)}`);
@@ -17,16 +17,17 @@ class AgenteController {
         if (paciente.id){
             pacienteRef = pacientesCollectionRef.doc(paciente.id);
         }
+        let doc = null;
         
         if ((!pacienteRef) || (!paciente.id)){        
             let snapshot = await pacientesCollectionRef.where("nome", "==", paciente.nome)
                                                    .where("data_nascimento", "==", paciente.data_nascimento).get();
             if ((snapshot) && (snapshot.docs.length > 0)) {
-                pacienteRef = pacientesCollectionRef.doc(paciente.id);
+                doc = await pacientesCollectionRef.doc(paciente.id).get();                
             }                                                
         }
 
-        if ((pacienteRef) && (pacienteRef.exists)){        
+        if ((doc) && (doc.exists)){        
             await pacientesCollectionRef.doc(paciente.id).set(paciente);
             id = paciente.id;
         } else {
@@ -52,6 +53,19 @@ class AgenteController {
         } catch (error) {
             Log.logError(`Erro ao excluir o paciente. Detalhes: ${error}`);
             throw new ServerError("Não foi possível excluir o paciente.", 500);
+        }
+    }
+
+    async buscarPaciente(id) {        
+        try {
+            let doc = await firebase_admin.firestore().collection(COLLECTION_NAME).doc(id).get();
+            if ((doc) && (doc.exists)){            
+                return this.castDocumentData(doc);                
+            } 
+            return null;
+        } catch (error) {
+            Log.logError(`Erro ao buscar o paciente. Detalhes: ${error}`);
+            throw new ServerError("Não foi possível buscar o paciente.", 500);
         }
     }
 
@@ -105,4 +119,4 @@ class AgenteController {
 
 }
 
-module.exports = AgenteController;
+module.exports = PacienteController;

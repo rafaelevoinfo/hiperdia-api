@@ -19,6 +19,13 @@ function addRotas(app) {
         });
 
     app.route('/pacientes/:id')
+        .get(async (req, res) => {
+            if (await authorize(req, res)) {
+                let vaController = new PacienteController();
+                let vaResult = await vaController.buscarPaciente(req.params.id);
+                res.status(200).send(vaResult);
+            }
+        })
         .delete(async (req, res) => {
             if (await authorize(req, res)) {
                 let vaController = new PacienteController();
