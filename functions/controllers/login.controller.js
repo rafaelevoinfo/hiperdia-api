@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { Log, LogLevel } = require('../log')
-const { firebase_admin } = require('../firebase')
+const firebase_admin  = require('firebase-admin');
 
 class LoginController {
   

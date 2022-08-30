@@ -19,6 +19,13 @@ function addRotas(app) {
         });
 
     app.route('/agentes/:id')
+        .get(async (req, res) => {
+            if (await authorize(req, res)) {
+                let vaController = new AgenteController();
+                let vaResult = await vaController.buscarAgente(req.params.id);
+                res.status(200).send(vaResult);
+            }
+        })
         .delete(async (req, res) => {
             if (await authorize(req, res)) {
                 let vaController = new AgenteController();

@@ -1,5 +1,5 @@
 const { ServerError } = require('../middlewares/handle_error.middleware');
-const { firebase_admin } = require('../firebase')
+const firebase_admin  = require('firebase-admin');
 const { Log } = require('../log')
 const COLLECTION_NAME = "consultas";
 
@@ -17,7 +17,7 @@ class ConsultaController {
         if (consulta.id) {
             consultaRef = consultasCollectionRef.doc(consulta.id);
         }
-
+// CONVERTER A DATA PARA ISO RETIRANDO AS HORAS        
         if ((consultaRef) && (consultaRef.exists)) {
             await consultasCollectionRef.doc(consulta.id).set(consulta);
             id = consulta.id;
@@ -47,14 +47,32 @@ class ConsultaController {
         }
     }
 
-    async buscar(req) {
+    async buscarConsulta(id){
+        try {
+            let doc = await firebase_admin.firestore().collection(COLLECTION_NAME).doc(id).get();
+            return this.castDocumentData(doc)
+        } catch (error) {
+            Log.logError(`Erro ao buscar uma consulta. Detalhes: ${error}`);
+            throw new ServerError("Não foi possível busca a consulta.", 500);
+        } 
+    }
+
+    async buscarConsultas(req) {
         let consultas = [];
         try {
-            let consultasRef = firebase_admin.firestore().collection(COLLECTION_NAME);
+            if (!req.query.id_paciente){
+                throw new ServerError("O id do paciente é obrigatório.", 400);
+            }
+            //vamos pegar apenas os campos necessarios para exibir na tela de listagem
+            let consultasRef = firebase_admin.firestore().collection(COLLECTION_NAME).select(
+                'id_paciente', 'data', 'hipertensao_arterial', 'diabetes'
+            );            
             let query = consultasRef.where("id_paciente", "==", req.query.id_paciente);
 
-            if (req.query.data) {
-                query = query.where("data", "==", req.query.data);
+            if (req.query.data) { 
+                let data = new Date(req.query.data);      
+                let dataIso = data.toISOString();                         
+                query = query.where("data", "==", dataIso);
             }
 
             let snapshot = await query.get();            

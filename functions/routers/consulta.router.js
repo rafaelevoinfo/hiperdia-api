@@ -6,7 +6,7 @@ function addRotas(app) {
         .get(async (req, res) => {
             if (await authorize(req, res)) {
                 let vaController = new ConsultaController();
-                let vaResult = await vaController.buscar(req);
+                let vaResult = await vaController.buscarConsultas(req);
                 res.status(200).send(vaResult);
             }
         })
@@ -19,6 +19,13 @@ function addRotas(app) {
         });
 
     app.route('/consultas/:id')
+        .get(async (req, res) => {
+            if (await authorize(req, res)) {
+                let vaController = new ConsultaController();
+                let vaResult = await vaController.buscarConsulta(req.params.id);
+                res.status(200).send(vaResult);
+            }
+        })
         .delete(async (req, res) => {
             if (await authorize(req, res)) {
                 let vaController = new ConsultaController();

@@ -1,5 +1,5 @@
 const { ServerError } = require('../middlewares/handle_error.middleware');
-const { firebase_admin } = require('../firebase')
+const firebase_admin  = require('firebase-admin');
 const { Log } = require('../log')
 const COLLECTION_NAME = "agentes";
 
@@ -50,6 +50,16 @@ class AgenteController {
             Log.logError(`Erro ao excluir o agente. Detalhes: ${error}`);
             throw new ServerError("Não foi possível excluir o agente.", 500);
         }
+    }
+
+    async buscarAgente(id){
+        try {
+            let doc = await firebase_admin.firestore().collection(COLLECTION_NAME).doc(id).get();
+            return this.castDocumentData(doc)
+        } catch (error) {
+            Log.logError(`Erro ao buscar um agente. Detalhes: ${error}`);
+            throw new ServerError("Não foi possível busca o agente.", 500);
+        } 
     }
 
     async buscarAgentes(req) {

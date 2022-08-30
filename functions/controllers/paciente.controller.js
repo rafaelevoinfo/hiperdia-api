@@ -1,5 +1,5 @@
 const { ServerError } = require('../middlewares/handle_error.middleware');
-const { firebase_admin } = require('../firebase')
+const firebase_admin  = require('firebase-admin');
 const { Log } = require('../log')
 const COLLECTION_NAME = "pacientes";
 
@@ -59,10 +59,7 @@ class PacienteController {
     async buscarPaciente(id) {        
         try {
             let doc = await firebase_admin.firestore().collection(COLLECTION_NAME).doc(id).get();
-            if ((doc) && (doc.exists)){            
-                return this.castDocumentData(doc);                
-            } 
-            return null;
+            return this.castDocumentData(doc);                                        
         } catch (error) {
             Log.logError(`Erro ao buscar o paciente. Detalhes: ${error}`);
             throw new ServerError("Não foi possível buscar o paciente.", 500);
