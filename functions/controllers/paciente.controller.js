@@ -12,14 +12,13 @@ class PacienteController {
         }
 
         let id = undefined;
-        let pacientesCollectionRef = firebase_admin.firestore().collection(COLLECTION_NAME);
-        let pacienteRef = null;
-        if (paciente.id){
-            pacienteRef = pacientesCollectionRef.doc(paciente.id);
-        }
+        let pacientesCollectionRef = firebase_admin.firestore().collection(COLLECTION_NAME);        
         let doc = null;
+        if (paciente.id)  {
+            doc =  await pacientesCollectionRef.doc(paciente.id).get();            
+        }
         
-        if ((!pacienteRef) || (!paciente.id)){        
+        if ((!doc) || (!doc.exists)){        
             let snapshot = await pacientesCollectionRef.where("nome", "==", paciente.nome)
                                                    .where("data_nascimento", "==", paciente.data_nascimento).get();
             if ((snapshot) && (snapshot.docs.length > 0)) {
@@ -69,10 +68,10 @@ class PacienteController {
     async buscarPacientes(req) {
         let pacientes = [];
         try {
-            let pacientesRef = firebase_admin.firestore().collection(COLLECTION_NAME);
+            let pacientesCollectionRef = firebase_admin.firestore().collection(COLLECTION_NAME);
             let query = null;
             if (req.query.nome) {
-                query = pacientesRef.orderBy("nome")
+                query = pacientesCollectionRef.orderBy("nome")
                     .startAt(req.query.nome)
                     .endAt(req.query.nome + '\uf8ff');
                     
@@ -81,7 +80,7 @@ class PacienteController {
                 if (query){
                     query = query.where("data_nascimento", "==", req.query.data_nascimento);
                 }else{
-                    query = pacientesRef.where("data_nascimento", "==", req.query.data_nascimento);
+                    query = pacientesCollectionRef.where("data_nascimento", "==", req.query.data_nascimento);
                 }                
             }
 
@@ -90,7 +89,7 @@ class PacienteController {
             if (query) {
                 snapshot = await query.get();
             } else {
-                snapshot = await pacientesRef.get();
+                snapshot = await pacientesCollectionRef.get();
             }
 
             snapshot.forEach((doc) => {
