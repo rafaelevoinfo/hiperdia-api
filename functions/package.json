@@ -2,7 +2,8 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    "serve": "firebase emulators:start --only functions",
+    // "serve": "firebase emulators:start --import=C:\\Users\rafae\\Repositorios\\Hiperdia-api\\functions\\firebase-export --export-on-exit",
+    "serve": "firebase emulators:start",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
@@ -14,10 +15,11 @@
   },
   "main": "index.js",
   "dependencies": {
-    "firebase-admin": "^10.0.2",
-    "firebase-functions": "^3.18.0",
+    "crypto-js": "^4.1.1",
     "express": "^4.18.1",
     "express-async-errors": "^3.1.1",
+    "firebase-admin": "^10.0.2",
+    "firebase-functions": "^3.18.0",
     "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {

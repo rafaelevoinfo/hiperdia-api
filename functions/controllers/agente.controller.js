@@ -1,17 +1,23 @@
 const { ServerError } = require('../middlewares/handle_error.middleware');
 const firebase_admin  = require('firebase-admin');
 const { Log } = require('../log')
+const {criptografar} = require("./utils.js");
 const COLLECTION_NAME = "agentes";
+
 
 class AgenteController {
 
-    async salvarAgente(agente) {
-        Log.logInfo(`Salvando o agente ${JSON.stringify(agente)}`);
-        if ((!agente) || (!agente.login) || (!agente.senha) || (!agente.nome)) {
+    async salvarAgente(agente) {        
+        if (((!agente) || (!agente.login) || (!agente.nome)) || 
+            ((!agente.id) && (!agente.senha))) {
             throw new ServerError("Dados inválidos", 400);
         }
         if (!agente.perfil) {
             agente.perfil = 0;
+        }
+        
+        if (agente.senha){
+            agente.senha = criptografar(agente.senha)
         }
 
         let id = undefined;
@@ -23,9 +29,14 @@ class AgenteController {
                     throw new ServerError("Já existe um agente cadastrado para este login", 400);
                 }
             })
-
-            await agentesCollectionRef.doc(agente.id).set(agente);
-            id = agente.id;
+            if (!agente.senha){
+                delete agente.senha
+            }
+            if (process.env.DEBUG){
+                Log.logInfo(`Salvando o agente ${JSON.stringify(agente)}`);
+            }            
+            await agentesCollectionRef.doc(agente.id).set(agente, {merge:true});
+            id = agente.id;            
         } else {
             let agenteBd = await agentesCollectionRef.add(agente);
             id = agenteBd.id;
@@ -96,6 +107,7 @@ class AgenteController {
     castDocumentData(doc) {
         if (doc && doc.exists) {
             let agente = doc.data();
+            agente.senha = undefined;//nunca queremos retornar a senha
             agente.id = doc.id;
             return agente;
         }
