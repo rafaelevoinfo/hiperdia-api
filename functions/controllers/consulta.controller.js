@@ -13,17 +13,16 @@ class ConsultaController {
 
         let id = undefined;
         let consultasCollectionRef = firebase_admin.firestore().collection(COLLECTION_NAME);
-        let consultaRef = null;
+        let doc = null;
         if (consulta.id) {
-            consultaRef = consultasCollectionRef.doc(consulta.id);
+            doc = await consultasCollectionRef.doc(consulta.id).get();
         }
-// CONVERTER A DATA PARA ISO RETIRANDO AS HORAS        
-        if ((consultaRef) && (consultaRef.exists)) {
+        if ((!doc) || (!doc.exists)){        
+            let novaConsulta = await consultasCollectionRef.add(consulta);
+            id = novaConsulta.id;                                                
+        }else{
             await consultasCollectionRef.doc(consulta.id).set(consulta);
             id = consulta.id;
-        } else {
-            let novaConsulta = await consultasCollectionRef.add(consulta);
-            id = novaConsulta.id;
         }
 
         if (id) {
@@ -69,10 +68,8 @@ class ConsultaController {
             );            
             let query = consultasRef.where("id_paciente", "==", req.query.id_paciente);
 
-            if (req.query.data) { 
-                let data = new Date(req.query.data);      
-                let dataIso = data.toISOString();                         
-                query = query.where("data", "==", dataIso);
+            if (req.query.data) {                           
+                query = query.where("data", "==", req.query.data);
             }
 
             let snapshot = await query.get();            

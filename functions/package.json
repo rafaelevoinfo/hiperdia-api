@@ -2,8 +2,7 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    // "serve": "firebase emulators:start --import=C:\\Users\rafae\\Repositorios\\Hiperdia-api\\functions\\firebase-export --export-on-exit",
-    "serve": "firebase emulators:start",
+    "serve": "firebase emulators:start --import ./emulator --export-on-exit",    
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
