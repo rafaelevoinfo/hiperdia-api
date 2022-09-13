@@ -2,6 +2,7 @@ const { ServerError } = require('../middlewares/handle_error.middleware');
 const firebase_admin  = require('firebase-admin');
 const { Log } = require('../log')
 const COLLECTION_NAME = "pacientes";
+const utils = require('./utils.js');
 
 class PacienteController {
 
@@ -14,6 +15,9 @@ class PacienteController {
         let id = undefined;
         let pacientesCollectionRef = firebase_admin.firestore().collection(COLLECTION_NAME);        
         let doc = null;
+
+        paciente.data_nascimento = utils.iso8601ToDate(paciente.data_nascimento);
+
         if (paciente.id)  {
             doc =  await pacientesCollectionRef.doc(paciente.id).get();            
         }
@@ -82,14 +86,15 @@ class PacienteController {
                 }else{
                     query = pacientesCollectionRef.where("data_nascimento", "==", req.query.data_nascimento);
                 }                
-            }
+            }            
 
             //na pratica nao precisa desse if, mas iria ficar confuso pq são objetos diferentes
             let snapshot = undefined;
-            if (query) {
+            if (query) {                
                 snapshot = await query.get();
             } else {
-                snapshot = await pacientesCollectionRef.get();
+                //vamos limitar a 100 para nao trazer o banco inteiro caso nao tenha filtro algum
+                snapshot = await pacientesCollectionRef.limit(100).get();
             }
 
             snapshot.forEach((doc) => {
@@ -109,6 +114,8 @@ class PacienteController {
         if (doc && doc.exists) {
             let paciente = doc.data();
             paciente.id = doc.id;
+            paciente.data_nascimento = utils.timeStampToIso8601(paciente.data_nascimento);
+                        
             return paciente;
         }
     }
