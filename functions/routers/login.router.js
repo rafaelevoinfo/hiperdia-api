@@ -1,6 +1,14 @@
+const authorize = require('../controllers/auth.controller');
 const LoginController = require('../controllers/login.controller')
 
 function addRotas(app) {
+    app.route('/check-token')
+        .get(async (req, res) => {
+            if (await authorize(req, res)) {
+                res.status(200).send("token válido");
+            }
+        });
+
     app.route('*/login')
         .post(async (req, res) => {
             let vaController = new LoginController();

@@ -21,16 +21,16 @@ function addRotas(app) {
     app.route('/consultas/ultima/:id_paciente')
         .get(async (req, res) => {
             if (await authorize(req, res)) {
-                let controller = new ConsultaController();                
+                let controller = new ConsultaController();
                 let result = await controller.buscarUltimaConsulta(req.params.id_paciente);
-                if (result){
+                if (result) {
                     res.status(200).send(result);
-                }else{
+                } else {
                     res.status(404).send({
-                        message:"Nenhuma consulta encontrada"
+                        message: "Nenhuma consulta encontrada"
                     });
                 }
-                
+
             }
         });
 
@@ -53,6 +53,14 @@ function addRotas(app) {
                 }
             }
         });
+    app.route('/consultas/:id/plano')
+        .get(async (req, res) => {
+            if (await authorize(req, res)) {
+                let controller = new ConsultaController();
+                let result = await controller.buscarGerarPlanoAcaoConsulta(req.params.id);
+                res.status(200).send(result);
+            }
+        })
 }
 
 exports.addRotas = addRotas;

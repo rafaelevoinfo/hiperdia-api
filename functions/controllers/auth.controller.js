@@ -12,7 +12,7 @@ async function authorize(req, res) {
     }
 
     token = token.replace('Bearer ', '');
-    let vaResult = false;
+    let result = false;
         
     jwt.verify(token, process.env.SECRET, function (err, decoded) {
         if (err) {
@@ -25,10 +25,10 @@ async function authorize(req, res) {
         
         // se tudo estiver ok, salva no request para uso posterior
         req.email = decoded.email;
-        vaResult = true;
+        result = true;
     });
 
-    return vaResult;
+    return result;
 }
 
 module.exports = authorize

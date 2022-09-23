@@ -62,7 +62,7 @@ class ConsultaController {
     }
 
     async buscarUltimaConsulta(id_paciente) {
-        try {            
+        try {
             let snapshot = await firebase_admin.firestore().collection(COLLECTION_NAME)
                 .where("id_paciente", "==", id_paciente)
                 .orderBy('data', 'desc')
@@ -106,6 +106,36 @@ class ConsultaController {
         } catch (error) {
             Log.logError(`Erro ao buscar as consultas. Detalhes: ${error}`);
             throw new ServerError("Não foi possível buscar as consultas.", 500);
+        }
+    }
+
+    async buscarGerarPlanoAcaoConsulta(id) {
+        Log.logInfo("Buscando plano de ação")
+        let consulta = await this.buscarConsulta(id);
+        if (consulta) {
+            if (!consulta.plano) {
+                consulta.plano = this._gerarPlano(consulta)
+                await this.salvar(consulta);
+            }
+            return consulta.plano;
+        } else {
+            Log.logError(`Consulta de ${id} não existe`);
+            throw new ServerError("Consulta inexistente", 500);
+        }
+    }
+
+    _gerarPlano(consulta) {
+        return {
+            id: 1,
+            data_consulta: new Date(),
+            recomendacoes: [
+                {
+                    problema: "Não realização de exercício físico ou realizar pouco",
+                    intervencoes: ['Pratique atividade física regularmente, sob a supervisão de um profissional capacitado, mas realize um lanche 30 minutos antes para ter energia suficiente para realizar o exercício!',
+                        'Orientar sobre a importância da atividade física para controle do nível glicêmico, da pressão arterial e para o bem-estar geral.',
+                        'Orientar e estimular a participação em grupos de atividade física realizados na unidade de saúde.']
+                }
+            ]
         }
     }
 
