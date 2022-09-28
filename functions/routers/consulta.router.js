@@ -34,18 +34,18 @@ function addRotas(app) {
             }
         });
 
-    app.route('/consultas/:id')
+    app.route('/consultas/:id_paciente/:id')
         .get(async (req, res) => {
             if (await authorize(req, res)) {
                 let vaController = new ConsultaController();
-                let vaResult = await vaController.buscarConsulta(req.params.id);
+                let vaResult = await vaController.buscarConsulta(req.params.id_paciente, req.params.id);
                 res.status(200).send(vaResult);
             }
-        })
+        })        
         .delete(async (req, res) => {
             if (await authorize(req, res)) {
                 let vaController = new ConsultaController();
-                let vaResult = await vaController.excluir(req.params.id);
+                let vaResult = await vaController.excluir(req.params.id_paciente, req.params.id);
                 if (vaResult) {
                     res.status(204).send();
                 } else {
@@ -53,11 +53,11 @@ function addRotas(app) {
                 }
             }
         });
-    app.route('/consultas/:id/plano')
+    app.route('/consultas/:id_paciente/:id/plano')
         .get(async (req, res) => {
             if (await authorize(req, res)) {
                 let controller = new ConsultaController();
-                let result = await controller.buscarGerarPlanoAcaoConsulta(req.params.id);
+                let result = await controller.buscarGerarPlanoAcaoConsulta(req.params.id_paciente, req.params.id, req.query.recriar);
                 res.status(200).send(result);
             }
         })
