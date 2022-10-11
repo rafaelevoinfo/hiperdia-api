@@ -110,8 +110,10 @@ class ConsultaController {
             );
             //let query = consultasRef.where("id_paciente", "==", req.query.id_paciente);
 
-            if (req.query.data) {
-                query = query.where("data", "==", req.query.data);
+            if (req.query.data) {                
+                let dataConsulta = utils.iso8601ToDate(req.query.data);
+                console.log(`Data de pesquisa: ${req.query.data} - ${dataConsulta}`);
+                query = query.where("data", "==", dataConsulta);
             }
 
             let snapshot = await query.get();

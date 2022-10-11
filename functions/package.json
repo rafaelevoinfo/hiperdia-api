@@ -7,8 +7,8 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "functions": "firebase emulators:start --inspect-functions --only functions",
-    "debug": "firebase emulators:start --inspect-functions"
+    "functions": "firebase emulators:start --only functions",
+    "debug": "firebase emulators:start --inspect-functions --only functions"
   },
   "engines": {
     "node": "16"

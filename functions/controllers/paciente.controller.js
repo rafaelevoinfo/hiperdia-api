@@ -81,10 +81,11 @@ class PacienteController {
                     
             }
             if (req.query.data_nascimento){
+                let dataNascimento = utils.iso8601ToDate(req.query.data_nascimento);
                 if (query){
-                    query = query.where("data_nascimento", "==", req.query.data_nascimento);
+                    query = query.where("data_nascimento", "==", dataNascimento);
                 }else{
-                    query = pacientesCollectionRef.where("data_nascimento", "==", req.query.data_nascimento);
+                    query = pacientesCollectionRef.where("data_nascimento", "==", dataNascimento);
                 }                
             }            
 
