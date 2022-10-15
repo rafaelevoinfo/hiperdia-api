@@ -19,12 +19,14 @@ const rotasLogin = require('./routers/login.router');
 const rotasAgente = require('./routers/agente.router');
 const rotasPaciente = require('./routers/paciente.router');
 const rotasConsulta = require('./routers/consulta.router');
+const rotasRelatorios = require('./routers/relatorio.router');
 
 // console.log(auth);
 rotasLogin.addRotas(app);
 rotasAgente.addRotas(app);
 rotasPaciente.addRotas(app);
 rotasConsulta.addRotas(app);
+rotasRelatorios.addRotas(app);
 app.use(handle_error);
 
 exports.api = functions.https.onRequest(app);

@@ -30,10 +30,16 @@ class PacienteController {
             }                                                
         }
 
-        if ((doc) && (doc.exists)){        
+        if ((doc) && (doc.exists)){   
+            let pac = this.castDocumentData(doc);
+            if (pac && !pac.data_cadastro){
+                paciente.data_cadastro = doc.createTime;
+            }
+
             await pacientesCollectionRef.doc(paciente.id).set(paciente);
             id = paciente.id;
         } else {
+            paciente.data_cadastro = firebase_admin.firestore.FieldValue.serverTimestamp();
             let novoPaciente = await pacientesCollectionRef.add(paciente);
             id = novoPaciente.id;
         }
