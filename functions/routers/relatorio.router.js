@@ -7,7 +7,16 @@ function addRotas(app) {
             if (await authorize(req, res)) {
                 let result = await new RelatorioController().gerarRelatorioQuantitativoPaciente(req.params.data_inicial, req.params.data_final);
                 console.log(result);
-                res.status(200).send({total_pacientes:result});
+                res.status(200).send({ total_pacientes: result });
+            }
+        });
+
+    app.get('/relatorios/sociodemografico/:data_inicial/:data_final',
+        async (req, res) => {
+            if (await authorize(req, res)) {
+                let result = await new RelatorioController().gerarRelatorioSociodemografico(req.params.data_inicial, req.params.data_final);
+                console.log(result);
+                res.status(200).send(result);
             }
         });
 }
