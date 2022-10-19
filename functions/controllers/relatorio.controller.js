@@ -175,7 +175,7 @@ class RelatorioController {
         if ((data_inicial) && (data_final)) {
             //vamos colocar a hora maxima na data_final para sempre trazer os registros do dia
             data_final.setHours(23, 59, 59, 0);
-            let pacientes = await firebase_admin.firestore().collection(COLLECTION_NAME)
+            let pacientes = await firebase_admin.firestore().collection(COLLECTION_PACIENTE)
                 .where('data_cadastro', '>=', data_inicial)
                 .where('data_cadastro', '<=', data_final)
                 .select("data_cadastro")
