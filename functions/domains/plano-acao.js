@@ -4,6 +4,7 @@ const utils = require('../controllers/utils');
 class GeradorPlanoAcao {
     _plano;
     gerarPlano(consulta) {
+        console.log('Gerando plano:', consulta.data);
         this._plano = {
             id: 1,
             data_consulta: utils.iso8601ToDate(consulta.data),

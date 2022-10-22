@@ -10,37 +10,7 @@ const COLLECTION_CONSULTAS = 'consultas';
 
 
 class RelatorioController {
-    async gerarRelatorioSociodemografico(dataInicialIso, dataFinalIso) {
-        Log.logInfo(`Gerando relatório socio demográfico entre as datas ${dataInicialIso} e ${dataFinalIso}`);
-        let pacientes = [];
-        let data_inicial = utils.iso8601ToDate(dataInicialIso);
-        let data_final = utils.iso8601ToDate(dataFinalIso);
 
-        if ((data_inicial) && (data_final)) {
-            //pegar o paciente e todas as consultas que tiverem dentro dessa periodo
-            let snap = await firebase_admin.firestore().collectionGroup(COLLECTION_CONSULTAS)
-                .where('data', '>=', data_inicial)
-                .where('data', '<=', data_final)
-                .select()
-                .get();
-
-            let ids = [];
-            for (let consulta of snap.docs) {
-                let idPac = consulta.ref.parent.parent.id;
-                if (!ids.find(id => id == idPac)) {
-                    ids.push(idPac);
-                    let pacDoc = await firebase_admin.firestore().collection(COLLECTION_PACIENTE).doc(idPac)
-                        .get();
-                    if ((pacDoc) && (pacDoc.exists)) {
-                        let pac = pacDoc.data();
-                        pacientes.push(pac);
-                    }
-                }
-            }
-
-            return this._contarRegistros(pacientes);
-        }
-    }
 
     _contarIdade(totalizador, pac) {
         if (pac.data_nascimento) {
@@ -114,10 +84,10 @@ class RelatorioController {
                 case (parseInt(pac.qtde_filhos) < 5):
                     faixa = 'Entre 3 e 5'
                     ordem = 4;
-                    break;                
+                    break;
                 default:
                     faixa = 'Acima de 5'
-                    ordem=99;
+                    ordem = 99;
             }
             let reg = totalizador.filhos.find(f => f.faixa == faixa);
             if (reg) {
@@ -167,6 +137,38 @@ class RelatorioController {
         return totalizador;
     }
 
+    async gerarRelatorioSociodemografico(dataInicialIso, dataFinalIso) {
+        Log.logInfo(`Gerando relatório socio demográfico entre as datas ${dataInicialIso} e ${dataFinalIso}`);
+        let pacientes = [];
+        let data_inicial = utils.iso8601ToDate(dataInicialIso);
+        let data_final = utils.iso8601ToDate(dataFinalIso);
+
+        if ((data_inicial) && (data_final)) {
+            //pegar o paciente e todas as consultas que tiverem dentro dessa periodo
+            let snap = await firebase_admin.firestore().collectionGroup(COLLECTION_CONSULTAS)
+                .where('data', '>=', data_inicial)
+                .where('data', '<=', data_final)
+                .select()
+                .get();
+
+            let ids = [];
+            for (let consulta of snap.docs) {
+                let idPac = consulta.ref.parent.parent.id;
+                if (!ids.find(id => id == idPac)) {
+                    ids.push(idPac);
+                    let pacDoc = await firebase_admin.firestore().collection(COLLECTION_PACIENTE).doc(idPac)
+                        .get();
+                    if ((pacDoc) && (pacDoc.exists)) {
+                        let pac = pacDoc.data();
+                        pacientes.push(pac);
+                    }
+                }
+            }
+
+            return this._contarRegistros(pacientes);
+        }
+    }
+
     async gerarRelatorioQuantitativoPaciente(dataInicialIso, dataFinalIso) {
         Log.logInfo(`Gerando relatório quantitativo entre as datas ${dataInicialIso} e ${dataFinalIso}`);
         let data_inicial = utils.iso8601ToDate(dataInicialIso);
@@ -181,6 +183,48 @@ class RelatorioController {
                 .select("data_cadastro")
                 .get();
             return pacientes?.size ?? 0;
+        } else {
+            throw new ServerError('Datas inválidas', 400);
+        }
+
+    }
+
+    async gerarRelatorioQuantitativoHipertensoDiabetico(dataInicialIso, dataFinalIso) {
+        Log.logInfo(`Gerando relatório hipertenso/diabetico entre as datas ${dataInicialIso} e ${dataFinalIso}`);
+        let data_inicial = utils.iso8601ToDate(dataInicialIso);
+        let data_final = utils.iso8601ToDate(dataFinalIso);
+
+        if ((data_inicial) && (data_final)) {
+            //pegar o paciente e todas as consultas que tiverem dentro dessa periodo
+            let snap = await firebase_admin.firestore().collectionGroup(COLLECTION_CONSULTAS)
+                .where('data', '>=', data_inicial)
+                .where('data', '<=', data_final)
+                .select("diabetes", "hipertensao_arterial")
+                .get();
+
+            let diabetico = 0;
+            let hipertenso = 0;
+            let ids = [];
+            snap.forEach(conRef => {
+                if ((conRef) && (conRef.exists)) {
+                    let idPac = conRef.ref.parent.parent.id;
+                    if (!ids.find(id => id == idPac)) {
+                        ids.push(idPac);
+                        let consulta = conRef.data();
+                        if (consulta.diabetes) {
+                            diabetico++;
+                        }
+                        if (consulta.hipertensao_arterial) {
+                            hipertenso++;
+                        }
+                    }
+                }
+            });
+
+            return {
+                diabetico,
+                hipertenso
+            }
         } else {
             throw new ServerError('Datas inválidas', 400);
         }

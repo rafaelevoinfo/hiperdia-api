@@ -38,7 +38,7 @@ function addRotas(app) {
         .get(async (req, res) => {
             if (await authorize(req, res)) {
                 let vaController = new ConsultaController();
-                let vaResult = await vaController.buscarConsulta(req.params.id_paciente, req.params.id);
+                let vaResult = await vaController.buscarConsulta(req.params.id_paciente, req.params.id, true);
                 res.status(200).send(vaResult);
             }
         })        

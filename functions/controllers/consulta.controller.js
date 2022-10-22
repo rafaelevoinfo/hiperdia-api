@@ -32,7 +32,7 @@ class ConsultaController {
                 let novaConsulta = await consultasCollectionRef.add(consulta);
                 id = novaConsulta.id;
             } else {
-                await consultasCollectionRef.doc(consulta.id).set(consulta);
+                await consultasCollectionRef.doc(consulta.id).set(consulta, {merge:true});
                 id = consulta.id;
             }
 
@@ -62,14 +62,14 @@ class ConsultaController {
 
     }
 
-    async buscarConsulta(id_paciente, id_consulta) {
+    async buscarConsulta(id_paciente, id_consulta, ignorePlano=true) {
         let consulta = undefined;
         try {
             let doc = await firebase_admin.firestore().collection(COLLECTION_PACIENTE)
                 .doc(id_paciente).collection(COLLECTION_NAME)
                 .doc(id_consulta).get();
 
-            consulta = this.castDocumentData(doc);
+            consulta = this.castDocumentData(doc, ignorePlano);
         } catch (error) {
             Log.logError(`Erro ao buscar uma consulta. Detalhes: ${error}`);
             throw new ServerError("Não foi possível busca a consulta.", 500);
@@ -132,7 +132,7 @@ class ConsultaController {
 
     async buscarGerarPlanoAcaoConsulta(id_paciente, id_consulta, recriar) {
         Log.logInfo("Buscando plano de ação")
-        let consulta = await this.buscarConsulta(id_paciente, id_consulta);
+        let consulta = await this.buscarConsulta(id_paciente, id_consulta, false);
         if (consulta) {
             if ((!consulta.plano) || (recriar)) {
                 let gerador = new GeradorPlanoAcao();
@@ -151,19 +151,24 @@ class ConsultaController {
 
 
     ajustePlan(plano) {
-        if (plano.data_consulta) {                    
+        if (plano.data_consulta) { 
+            console.log('Plano.data_consulta:', plano.data_consulta);
             plano.data_consulta = utils.timeStampToIso8601(plano.data_consulta);            
         }
         return plano;
     }
 
-    castDocumentData(doc) {
+    castDocumentData(doc, ignorePlano) {
         if (doc && doc.exists) {
             let consulta = doc.data();
             consulta.id = doc.id;
             consulta.data = utils.timeStampToIso8601(consulta.data);
             consulta.data_ultima_consulta = utils.timeStampToIso8601(consulta.data_ultima_consulta);
-            consulta.data_ultima_consulta_odontologica = utils.timeStampToIso8601(consulta.data_ultima_consulta_odontologica);
+            consulta.data_ultima_consulta_odontologica = utils.timeStampToIso8601(consulta.data_ultima_consulta_odontologica);            
+            if (ignorePlano){
+                delete consulta.plano;
+            }
+            
             return consulta;
         }
     }
