@@ -24,8 +24,20 @@ class GeradorPlanoAcao {
         this._verificarProblemaSono(consulta);
         this._verificarProblemaAcompanhamentoMedico(consulta);
         this._verificarProblemaRenais(consulta);
+        this._verificarProblemasTcm(consulta)
 
         return this._plano;
+    }
+
+    _verificarProblemasTcm(consulta) {
+        if (consulta.anti_depressivo){
+            this._plano.recomendacoes.push({
+                problema: "Conduta terapêutica para pacientes com TCM",
+                intervencoes: ['Acompanhamento com psicológico',
+                    'Acompanhamento com psiquiatra',
+                    'Terapia coletiva']
+            });
+        }
     }
 
     _verificarProblemaAgua(consulta) {
