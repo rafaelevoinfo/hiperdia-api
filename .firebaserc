@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "hiperdia-mineiros"
-  }
+    "default": "hiperdia-mineiros",
+    "prod": "hiperdia-mineiros"
+  },
+  "targets": {},
+  "etags": {}
 }
