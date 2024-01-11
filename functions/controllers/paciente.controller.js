@@ -1,6 +1,6 @@
 const { ServerError } = require('../middlewares/handle_error.middleware');
 const firebase_admin = require('firebase-admin');
-const { Filter } = require('firebase-admin/firestore');
+const firestore = require('firebase-admin/firestore')
 const { Log } = require('../log')
 const COLLECTION_NAME = "pacientes";
 const COLLECTION_NAME_CONSULTAS = "consultas";
@@ -41,8 +41,9 @@ class PacienteController {
 
             await pacientesCollectionRef.doc(paciente.id).set(paciente);
             id = paciente.id;
-        } else {
-            paciente.data_cadastro = firebase_admin.firestore.FieldValue.serverTimestamp();
+
+        } else {                    
+            paciente.data_cadastro = firestore.FieldValue.serverTimestamp();
             let novoPaciente = await pacientesCollectionRef.add(paciente);
             id = novoPaciente.id;
         }

@@ -1,5 +1,6 @@
 const { ServerError } = require('../middlewares/handle_error.middleware');
 const firebase_admin = require('firebase-admin');
+const firestore = require('firebase-admin/firestore')
 const { Log } = require('../log')
 const GeradorPlanoAcao = require('../domains/plano-acao');
 const utils = require('./utils.js');
@@ -14,7 +15,7 @@ class ConsultaController {
             throw new ServerError("Campos obrigatórios não preenchidos", 400);
         }
         let pacienteRef = firebase_admin.firestore().collection(COLLECTION_PACIENTE).doc(consulta.id_paciente);
-        let snapshot = await firebase_admin.firestore().collection(COLLECTION_PACIENTE).where(firebase_admin.firestore.FieldPath.documentId(), "==", consulta.id_paciente).select().get();
+        let snapshot = await firebase_admin.firestore().collection(COLLECTION_PACIENTE).where(firestore.FieldPath.documentId(), "==", consulta.id_paciente).select().get();
 
         if (!snapshot.empty) {
             let id = undefined;

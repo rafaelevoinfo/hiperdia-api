@@ -1,5 +1,6 @@
 const Alergias = ['Captopril', 'Enalapril','Lisinopril','Ramipril']
 const SituacaoAlimentar = ['Jejum', 'Pós-prandial']
+const TipoSituacaoPosPrandial = ['DM1', 'DM2']
 const QtdeRefeicoesDia = ['1x ou menos', '2x', '4x', '6x ou mais']
 const QtdeAguaDia = ['Menos de 2L', '2L', 'Mais de 2L']
 
@@ -33,7 +34,9 @@ const ExamesUltimos12Meses = ['Endoscopia', 'Colonoscopia', 'Biópsia', 'Cateter
 const Estados = ['Acre', 'Alagoas', 'Amapá', 'Amazonas', 'Bahia', 'Ceará', 'Distrito Federal', 'Espírito Santo', 'Goiás', 'Maranhão', 'Mato Grosso', 'Mato Grosso do Sul', 'Minas Gerais', 'Pará', 'Paraíba', 'Paraná', 'Pernambuco', 'Piauí', 'Rio de Janeiro', 'Rio Grande do Norte', 'Rio Grande do Sul', 'Rondônia', 'Roraima', 'Santa Catarina', 'São Paulo', 'Sergipe', 'Tocantins'];
 const RotinaSono = ['Mais de 8 horas', 'Entre 6 e 8 horas', 'Entre 4 e 6 horas', 'Menos de 4 horas'];
 
-module.exports = {QtdeAguaDia, 
+module.exports = {SituacaoAlimentar,
+                  TipoSituacaoPosPrandial,
+                  QtdeAguaDia, 
                   FrequenciaAtividadeFisica, 
                   DuracaoAtividadeFisica,
                   FrequenciaBebida,
